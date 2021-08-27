@@ -2,22 +2,22 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/cupertino.dart';
 
 class FavoriteModel extends ChangeNotifier{
-  final List<String> words = [];
+  final List<WordPair> wordPairs = [];
 
-  int get totalCount => words.length;
+  int get totalCount => wordPairs.length;
 
   void add(WordPair wordPair) {
-    words.add(wordPair.asPascalCase);
+    wordPairs.add(wordPair);
     notifyListeners();
   }
 
   void remove(WordPair wordPair) {
-    words.remove(wordPair.asPascalCase);
+    wordPairs.remove(wordPair);
     notifyListeners();
   }
 
   void removeAll() {
-    words.clear();
+    wordPairs.clear();
     notifyListeners();
   }
 }

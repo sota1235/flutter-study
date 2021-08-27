@@ -1,9 +1,10 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sota1235_todo_app/model/favorite_model.dart';
+import 'package:sota1235_todo_app/model/word_list_model.dart';
 
 class WordList extends StatelessWidget {
-  final _biggerFont = const TextStyle(fontSize: 18);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,8 +21,11 @@ class WordList extends StatelessWidget {
 }
 
 class _Suggestions extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
-    final _suggestions = [WordPair.random()];
+    final suggestions = context.select<WordListModel, List<String>>(
+        (wordList) => wordList.wordPairs.map((e) => e.asPascalCase).toList(),
+    );
 
     return ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -32,23 +36,32 @@ class _Suggestions extends StatelessWidget {
 
           final int index = i ~/ 2;
 
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10));
+          if (index >= suggestions.length) {
+            final wordList = context.read<WordListModel>();
+            wordList.add();
           }
 
-          return _Row();
+          return _Row(index);
         });
   }
 }
 
 class _Row extends StatelessWidget {
+  final int _index;
+
+  _Row(this._index);
+
   Widget build(BuildContext context) {
-    final word = 'word';
-    final alreadySaved = true;
+    final wordPair = context.select<WordListModel, WordPair>(
+        (wordList) => wordList.getByPosition(_index),
+    );
+    final alreadySaved = context.select<FavoriteModel, bool>(
+        (favorite) => favorite.wordPairs.contains(wordPair),
+    );
 
     return ListTile(
       title: Text(
-        word,
+        wordPair.asPascalCase,
         style: TextStyle(fontSize: 18),
       ),
       trailing: Icon(
@@ -56,7 +69,12 @@ class _Row extends StatelessWidget {
         color: alreadySaved ? Colors.red : null,
       ),
       onTap: () {
-        print('TODO');
+        final favorite = context.read<FavoriteModel>();
+        if (alreadySaved) {
+          favorite.remove(wordPair);
+        } else {
+          favorite.add(wordPair);
+        }
       },
     );
   }
