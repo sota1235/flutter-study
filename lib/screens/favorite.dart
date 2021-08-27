@@ -1,8 +1,6 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sota1235_todo_app/model/favorite_model.dart';
-import 'package:sota1235_todo_app/model/word_list_model.dart';
 
 class Favorite extends StatelessWidget {
   final _biggerFont = const TextStyle(fontSize: 18);
@@ -31,6 +29,22 @@ class Favorite extends StatelessWidget {
         title: Text('Saved Suggestions'),
       ),
       body: ListView(children: divided),
+      bottomNavigationBar: BottomAppBar(
+        child: IconTheme(
+            data: IconThemeData(color: Theme.of(context).colorScheme.primary),
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    final favorite = context.read<FavoriteModel>();
+                    favorite.removeAll();
+                  },
+                  icon: Icon(Icons.delete),
+                )
+              ],
+            )
+        ),
+      ),
     );
   }
 }
